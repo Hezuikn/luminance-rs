@@ -87,12 +87,18 @@ impl GlfwSurface {
     )
       -> Result<(Window, Receiver<(f64, WindowEvent)>), GlfwSurfaceError<E>>,
   ) -> Result<Self, GlfwSurfaceError<E>> {
+    let mut test = std::time::Instant::now();
+    
     #[cfg(feature = "log-errors")]
     let error_cbk = glfw::LOG_ERRORS;
     #[cfg(not(feature = "log-errors"))]
     let error_cbk = glfw::FAIL_ON_ERRORS;
+    
+    dbg!(test.elapsed());
 
     let mut glfw = glfw::init(error_cbk)?;
+    
+    dbg!(test.elapsed());
 
     // OpenGL hints
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(
@@ -101,13 +107,22 @@ impl GlfwSurface {
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
     glfw.window_hint(glfw::WindowHint::ContextVersionMajor(3));
     glfw.window_hint(glfw::WindowHint::ContextVersionMinor(3));
+    
+    dbg!(test.elapsed());
 
     let (mut window, events_rx) = create_window(&mut glfw)?;
+    
+    dbg!(test.elapsed());
 
     // init OpenGL
     gl::load_with(|s| window.get_proc_address(s) as *const c_void);
+    
+    dbg!(test.elapsed());
 
     let gl = GL33::new().map_err(GlfwSurfaceError::GraphicsStateError)?;
+    
+    dbg!(test.elapsed());
+    
     let context = GL33Context { window, gl };
     let surface = GlfwSurface { events_rx, context };
 
