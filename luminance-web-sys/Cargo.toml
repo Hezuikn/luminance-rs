@@ -14,8 +14,8 @@ edition = "2021"
 rust-version = "1.56.0"
 
 [dependencies]
-luminance = { version = ">=0.46, <0.48", path = "../luminance" }
-luminance-webgl = { version = "0.6", path = "../luminance-webgl" }
+luminance = ">=0.46, <0.48"
+luminance-webgl = "0.6"
 wasm-bindgen = "0.2.63"
 
 [dependencies.web-sys]
