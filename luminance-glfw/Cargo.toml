@@ -19,8 +19,8 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 gl = "0.14"
 glfw = { version = ">=0.43, <0.46", default-features = false }
-luminance = { version = ">=0.46, <0.48", path = "../luminance" }
-luminance-gl = { version = "0.19", path = "../luminance-gl" }
+luminance = ">=0.46, <0.48"
+luminance-gl = "0.19"
 
 [features]
 default = ["glfw-sys"]
