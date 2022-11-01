@@ -24,10 +24,10 @@ gl33-GL_ARB_gpu_shader_fp64 = ["luminance-gl/GL_ARB_gpu_shader_fp64"] # 64-bit s
 webgl2 = ["luminance-webgl"] # WebGL2 backend
 
 [dependencies]
-luminance = { version = ">=0.46, <0.48", path = "../luminance" }
+luminance = ">=0.46, <0.48"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-luminance-gl = { version = "0.19", path = "../luminance-gl", optional = true }
+luminance-gl = { version = "0.19", optional = true }
 
 [target.'cfg(target_family = "wasm")'.dependencies]
-luminance-webgl = { version = "0.6", path = "../luminance-webgl", optional = true }
+luminance-webgl = { version = "0.6", optional = true }
