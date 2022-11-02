@@ -77,7 +77,7 @@ pub struct GlutinSurface {
   /// The windowed context.
   pub ctx: WindowedContext<PossiblyCurrent>,
   /// OpenGL 3.3 state.
-  gl: GL33,
+  pub gl: GL33,
 }
 
 unsafe impl GraphicsContext for GlutinSurface {
