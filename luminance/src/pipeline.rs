@@ -172,7 +172,7 @@ pub enum Viewport {
 }
 
 /// Various customization options for pipelines.
-#[non_exhaustive]
+//#[non_exhaustive]
 #[derive(Clone, Debug)]
 pub struct PipelineState {
   /// Color to use when clearing color buffers.
