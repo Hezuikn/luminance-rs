@@ -1,6 +1,6 @@
 [package]
 name = "luminance-glutin"
-version = "0.14.1"
+version = "0.15.1"
 license = "BSD-3-Clause"
 authors = ["Dimitri Sabadie <dimitri.sabadie@gmail.com>"]
 description = "Glutin support for luminance"
@@ -17,13 +17,14 @@ rust-version = "1.56.0"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-gl = "0.14"
-glutin = { version = "0.28", default-features = false }
+#gl = "0.14"
+glutin = { version = "0.30", default-features = false }
 luminance = ">=0.46, <0.48"
 luminance-gl = "0.19"
+#winit = "0.27"
 
 [features]
-default = ["x11", "wayland"]
-serde = ["glutin/serde"]
-x11 = ["glutin/x11"]
-wayland = ["glutin/wayland"]
+default = ["glx", "egl", "wgl"]
+glx = ["glutin/glx"]
+egl = ["glutin/egl"]
+wgl = ["glutin/wgl"]
