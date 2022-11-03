@@ -889,7 +889,7 @@ pub struct ProgramInterface<'a, B>
 where
   B: Shader,
 {
-  program: &'a mut B::ProgramRepr,
+  pub(crate) program: &'a mut B::ProgramRepr,
 }
 
 impl<'a, B> ProgramInterface<'a, B>
