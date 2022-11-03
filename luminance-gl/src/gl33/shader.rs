@@ -51,6 +51,7 @@ impl Program {
     let handle = self.handle;
 
     unsafe {
+      gl::ProgramParameteri(handle, gl::PROGRAM_BINARY_RETRIEVABLE_HINT, gl::TRUE as _);
       gl::LinkProgram(handle);
 
       let mut linked: GLint = gl::FALSE.into();
@@ -64,7 +65,6 @@ impl Program {
 
         let mut log: Vec<u8> = Vec::with_capacity(log_len as usize);
         gl::GetProgramInfoLog(handle, log_len, null_mut(), log.as_mut_ptr() as *mut GLchar);
-
         log.set_len(log_len as usize);
 
         Err(ProgramError::link_failed(String::from_utf8(log).unwrap()))
