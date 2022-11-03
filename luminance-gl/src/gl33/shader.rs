@@ -35,7 +35,7 @@ impl Drop for Stage {
 
 #[derive(Debug)]
 pub struct Program {
-  pub(crate) handle: GLuint,
+  pub handle: GLuint,
 }
 
 impl Drop for Program {
