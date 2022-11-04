@@ -689,7 +689,7 @@ where
   D: Dimensionable,
   P: Pixel,
 {
-  pub(crate) repr: B::TextureRepr,
+  pub repr: B::TextureRepr,
   size: D::Size,
   _phantom: PhantomData<*const P>,
 }
