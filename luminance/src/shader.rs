@@ -1149,9 +1149,9 @@ where
   B: Shader,
 {
   pub repr: B::ProgramRepr,
-  pub(crate) uni: Uni,
-  _sem: PhantomData<*const Sem>,
-  _out: PhantomData<*const Out>,
+  pub uni: Uni,
+  pub _sem: PhantomData<*const Sem>,
+  pub _out: PhantomData<*const Out>,
 }
 
 impl<B, Sem, Out, Uni> Program<B, Sem, Out, Uni>
