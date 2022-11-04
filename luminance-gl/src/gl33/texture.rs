@@ -10,10 +10,10 @@ use luminance::{
 use std::{cell::RefCell, mem, os::raw::c_void, ptr, rc::Rc};
 
 pub struct Texture {
-  pub(crate) handle: GLuint, // handle to the GPU texture object
-  pub(crate) target: GLenum, // “type” of the texture; used for bindings
-  mipmaps: usize,
-  state: Rc<RefCell<GLState>>,
+  pub handle: GLuint, // handle to the GPU texture object
+  pub target: GLenum, // “type” of the texture; used for bindings
+  pub mipmaps: usize,
+  pub state: Rc<RefCell<GLState>>,
 }
 
 impl Drop for Texture {
