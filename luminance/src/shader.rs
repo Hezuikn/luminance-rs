@@ -727,9 +727,9 @@ pub struct UniformBuilder<'a, B>
 where
   B: ?Sized + Shader,
 {
-  repr: B::UniformBuilderRepr,
-  warnings: Vec<UniformWarning>,
-  _a: PhantomData<&'a mut ()>,
+  pub repr: B::UniformBuilderRepr,
+  pub warnings: Vec<UniformWarning>,
+  pub _a: PhantomData<&'a mut ()>,
 }
 
 impl<'a, B> UniformBuilder<'a, B>
