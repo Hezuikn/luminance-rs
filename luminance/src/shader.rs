@@ -681,7 +681,7 @@ pub struct Stage<B>
 where
   B: ?Sized + Shader,
 {
-  repr: B::StageRepr,
+  pub repr: B::StageRepr,
 }
 
 impl<B> Stage<B>
