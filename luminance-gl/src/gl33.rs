@@ -8,7 +8,7 @@ mod framebuffer;
 mod pipeline;
 mod pixel;
 mod query;
-mod shader;
+pub mod shader;
 mod state;
 mod tess;
 mod texture;
