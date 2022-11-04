@@ -394,7 +394,7 @@ fn check_uniform_type_match(
   )
 }
 
-fn bind_vertex_attribs_locations<Sem>(program: &Program) -> Vec<VertexAttribWarning>
+pub fn bind_vertex_attribs_locations<Sem>(program: &Program) -> Vec<VertexAttribWarning>
 where
   Sem: Semantics,
 {
