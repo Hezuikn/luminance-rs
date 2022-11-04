@@ -17,19 +17,19 @@ use crate::{
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RenderState {
   /// Blending configuration.
-  blending: Option<BlendingMode>,
+  pub blending: Option<BlendingMode>,
   /// Depth test configuration.
-  depth_test: Option<Comparison>,
+  pub depth_test: Option<Comparison>,
   /// Depth write configuration.
-  depth_write: Write,
+  pub depth_write: Write,
   /// Stencil test configuration.
-  stencil_test: Option<StencilTest>,
+  pub stencil_test: Option<StencilTest>,
   /// Stencil operations.
-  stencil_operations: StencilOperations,
+  pub stencil_operations: StencilOperations,
   /// Face culling configuration.
-  face_culling: Option<FaceCulling>,
+  pub face_culling: Option<FaceCulling>,
   /// Scissor region configuration.
-  scissor: Option<ScissorRegion>,
+  pub scissor: Option<ScissorRegion>,
 }
 
 impl RenderState {
