@@ -24,7 +24,7 @@ use std::rc::Rc;
 /// This type is to be used as a luminance backend type. It implements the whole public API.
 #[derive(Debug)]
 pub struct GL33 {
-  pub(crate) state: Rc<RefCell<GLState>>,
+  pub state: Rc<RefCell<GLState>>,
 }
 
 impl GL33 {
