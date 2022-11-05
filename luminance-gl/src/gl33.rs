@@ -9,7 +9,7 @@ mod pipeline;
 mod pixel;
 mod query;
 pub mod shader;
-mod state;
+pub mod state;
 mod tess;
 pub mod texture;
 mod vertex_restart;
