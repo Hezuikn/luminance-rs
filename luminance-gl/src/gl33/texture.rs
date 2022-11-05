@@ -172,7 +172,7 @@ where
   }
 }
 
-pub(crate) fn opengl_target(d: Dim) -> GLenum {
+pub fn opengl_target(d: Dim) -> GLenum {
   match d {
     Dim::Dim1 => gl::TEXTURE_1D,
     Dim::Dim2 => gl::TEXTURE_2D,
@@ -183,7 +183,7 @@ pub(crate) fn opengl_target(d: Dim) -> GLenum {
   }
 }
 
-pub(crate) unsafe fn create_texture<D>(
+pub unsafe fn create_texture<D>(
   target: GLenum,
   size: D::Size,
   mipmaps: usize,
