@@ -690,8 +690,8 @@ where
   P: Pixel,
 {
   pub repr: B::TextureRepr,
-  size: D::Size,
-  _phantom: PhantomData<*const P>,
+  pub size: D::Size,
+  pub _phantom: PhantomData<*const P>,
 }
 
 impl<B, D, P> Texture<B, D, P>
