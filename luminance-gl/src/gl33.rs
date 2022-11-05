@@ -11,7 +11,7 @@ mod query;
 pub mod shader;
 mod state;
 mod tess;
-mod texture;
+pub mod texture;
 mod vertex_restart;
 
 pub use self::state::GLState;
