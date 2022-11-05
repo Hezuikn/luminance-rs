@@ -781,7 +781,7 @@ impl GLState {
   }
 
   /// Bind a texture at the current texture unit.
-  pub(crate) unsafe fn bind_texture(&mut self, target: GLenum, handle: GLuint) {
+  pub unsafe fn bind_texture(&mut self, target: GLenum, handle: GLuint) {
     // Unwrap should be safe here, because we should always bind the texture unit before we bind the texture.
     // Maybe this should be handled differently?
     let unit = self.current_texture_unit.0.unwrap();
