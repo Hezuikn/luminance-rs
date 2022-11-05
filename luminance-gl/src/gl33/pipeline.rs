@@ -156,7 +156,7 @@ where
 {
   type BoundTextureRepr = BoundTexture<D, P>;
 
-  pub unsafe fn bind_texture(
+  unsafe fn bind_texture(
     pipeline: &Self::PipelineRepr,
     texture: &Self::TextureRepr,
   ) -> Result<Self::BoundTextureRepr, PipelineError>
