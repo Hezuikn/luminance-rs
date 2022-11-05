@@ -482,7 +482,7 @@ impl GLState {
     &mut self.binding_stack
   }
 
-  pub(crate) fn create_texture(&mut self) -> GLuint {
+  pub fn create_texture(&mut self) -> GLuint {
     self.texture_swimming_pool.pop().unwrap_or_else(|| {
       let mut texture = 0;
 
