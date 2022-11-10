@@ -198,14 +198,14 @@ where
   create_texture_storage::<D>(size, 1 + mipmaps, pf)
 }
 
-fn set_texture_levels(target: GLenum, mipmaps: usize) {
+pub fn set_texture_levels(target: GLenum, mipmaps: usize) {
   unsafe {
     gl::TexParameteri(target, gl::TEXTURE_BASE_LEVEL, 0);
     gl::TexParameteri(target, gl::TEXTURE_MAX_LEVEL, mipmaps as GLint);
   }
 }
 
-fn apply_sampler_to_texture(target: GLenum, sampler: Sampler) {
+pub fn apply_sampler_to_texture(target: GLenum, sampler: Sampler) {
   unsafe {
     gl::TexParameteri(
       target,
