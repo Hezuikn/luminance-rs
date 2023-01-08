@@ -2,69 +2,62 @@
 
 #![deny(missing_docs)]
 
-use gl;
+use gl; //todo does this belong?
 use glutin::{
   event_loop::EventLoop, window::WindowBuilder, Api, ContextBuilder, ContextError, CreationError,
   GlProfile, GlRequest, NotCurrent, PossiblyCurrent, WindowedContext,
 };
-use luminance::context::GraphicsContext;
-use luminance::framebuffer::{Framebuffer, FramebufferError};
-use luminance::texture::Dim2;
-pub use luminance_gl::gl33::StateQueryError;
-use luminance_gl::GL33;
+use luminance::context::Context;
+use luminance_gl2::GL33;
 use std::error;
 use std::fmt;
 use std::os::raw::c_void;
 
 /// Error that might occur when creating a Glutin surface.
 #[derive(Debug)]
-pub enum GlutinError {
+pub enum GlutinSurfaceError {
   /// Something went wrong when creating the Glutin surface. The carried [`CreationError`] provides
   /// more information.
   CreationError(CreationError),
   /// OpenGL context error.
   ContextError(ContextError),
-  /// Graphics state error that might occur when querying the initial state.
-  GraphicsStateError(StateQueryError),
+  /// Error with the backend.
+  BackendError(String),
 }
 
-impl fmt::Display for GlutinError {
+impl fmt::Display for GlutinSurfaceError {
   fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
     match *self {
-      GlutinError::CreationError(ref e) => write!(f, "Glutin surface creation error: {}", e),
-      GlutinError::ContextError(ref e) => write!(f, "Glutin OpenGL context creation error: {}", e),
-      GlutinError::GraphicsStateError(ref e) => {
-        write!(f, "OpenGL graphics state initialization error: {}", e)
+      GlutinSurfaceError::CreationError(ref e) => write!(f, "Glutin surface creation error: {}", e),
+      GlutinSurfaceError::ContextError(ref e) => {
+        write!(f, "Glutin OpenGL context creation error: {}", e)
+      }
+      GlutinSurfaceError::BackendError(ref reason) => {
+        write!(f, "Glutin surface backend error: {}", reason)
       }
     }
   }
 }
 
-impl error::Error for GlutinError {
+impl error::Error for GlutinSurfaceError {
   fn source(&self) -> Option<&(dyn error::Error + 'static)> {
     match self {
-      GlutinError::CreationError(e) => Some(e),
-      GlutinError::ContextError(e) => Some(e),
-      GlutinError::GraphicsStateError(e) => Some(e),
+      GlutinSurfaceError::CreationError(e) => Some(e),
+      GlutinSurfaceError::ContextError(e) => Some(e),
+      GlutinSurfaceError::BackendError(_) => None,
     }
   }
 }
 
-impl From<CreationError> for GlutinError {
+impl From<CreationError> for GlutinSurfaceError {
   fn from(e: CreationError) -> Self {
-    GlutinError::CreationError(e)
+    GlutinSurfaceError::CreationError(e)
   }
 }
 
-impl From<ContextError> for GlutinError {
+impl From<ContextError> for GlutinSurfaceError {
   fn from(e: ContextError) -> Self {
-    GlutinError::ContextError(e)
-  }
-}
-
-impl From<StateQueryError> for GlutinError {
-  fn from(e: StateQueryError) -> Self {
-    GlutinError::GraphicsStateError(e)
+    GlutinSurfaceError::ContextError(e)
   }
 }
 
@@ -75,17 +68,10 @@ impl From<StateQueryError> for GlutinError {
 /// [luminance]: https://crates.io/crates/luminance
 pub struct GlutinSurface {
   /// The windowed context.
-  pub ctx: WindowedContext<PossiblyCurrent>,
-  /// OpenGL 3.3 state.
-  gl: GL33,
-}
+  pub window_ctx: WindowedContext<PossiblyCurrent>,
 
-unsafe impl GraphicsContext for GlutinSurface {
-  type Backend = GL33;
-
-  fn backend(&mut self) -> &mut Self::Backend {
-    &mut self.gl
-  }
+  /// Wrapped luminance context.
+  pub ctx: Context<GL33>,
 }
 
 impl GlutinSurface {
@@ -101,15 +87,15 @@ impl GlutinSurface {
   pub fn new_gl33_from_builders<'a, WB, CB>(
     window_builder: WB,
     ctx_builder: CB,
-  ) -> Result<(Self, EventLoop<()>), GlutinError>
+  ) -> Result<(Self, EventLoop<()>), GlutinSurfaceError>
   where
-    WB: FnOnce(&mut EventLoop<()>, WindowBuilder) -> WindowBuilder,
+    WB: FnOnce(&mut EventLoop<()>) -> WindowBuilder,
     CB:
       FnOnce(&mut EventLoop<()>, ContextBuilder<'a, NotCurrent>) -> ContextBuilder<'a, NotCurrent>,
   {
     let mut event_loop = EventLoop::new();
 
-    let window_builder = window_builder(&mut event_loop, WindowBuilder::new());
+    let window_builder = window_builder(&mut event_loop);
 
     let windowed_ctx = ctx_builder(
       &mut event_loop,
@@ -119,15 +105,16 @@ impl GlutinSurface {
     )
     .build_windowed(window_builder, &event_loop)?;
 
-    let ctx = unsafe { windowed_ctx.make_current().map_err(|(_, e)| e)? };
+    let window_ctx = unsafe { windowed_ctx.make_current().map_err(|(_, e)| e)? };
 
     // init OpenGL
-    gl::load_with(|s| ctx.get_proc_address(s) as *const c_void);
+    gl::load_with(|s| window_ctx.get_proc_address(s) as *const c_void);
 
-    ctx.window().set_visible(true);
+    window_ctx.window().set_visible(true);
 
-    let gl = GL33::new().map_err(GlutinError::GraphicsStateError)?;
-    let surface = GlutinSurface { ctx, gl };
+    let ctx = Context::new(GL33::new)
+      .ok_or_else(|| GlutinSurfaceError::BackendError("unavailable OpenGL 3.3 state".to_owned()))?;
+    let surface = GlutinSurface { ctx, window_ctx };
 
     Ok((surface, event_loop))
   }
@@ -136,27 +123,14 @@ impl GlutinSurface {
   pub fn new_gl33(
     window_builder: WindowBuilder,
     samples: u16,
-  ) -> Result<(Self, EventLoop<()>), GlutinError> {
-    let event_loop = EventLoop::new();
-
-    let windowed_ctx = ContextBuilder::new()
-      .with_gl(GlRequest::Specific(Api::OpenGl, (3, 3)))
-      .with_gl_profile(GlProfile::Core)
-      .with_multisampling(samples)
-      .with_double_buffer(Some(true))
-      .build_windowed(window_builder, &event_loop)?;
-
-    let ctx = unsafe { windowed_ctx.make_current().map_err(|(_, e)| e)? };
-
-    // init OpenGL
-    gl::load_with(|s| ctx.get_proc_address(s) as *const c_void);
-
-    ctx.window().set_visible(true);
-
-    let gl = GL33::new().map_err(GlutinError::GraphicsStateError)?;
-    let surface = GlutinSurface { ctx, gl };
-
-    Ok((surface, event_loop))
+  ) -> Result<(Self, EventLoop<()>), GlutinSurfaceError> {
+    Self::new_gl33_from_builders(
+      |_el| window_builder,
+      |_el, cb| {
+        cb.with_multisampling(samples)
+          .with_double_buffer(Some(true))
+      },
+    )
   }
 
   /// Get the underlying size (in physical pixels) of the surface.
@@ -164,17 +138,12 @@ impl GlutinSurface {
   /// This is equivalent to getting the inner size of the windowed context and converting it to
   /// a physical size by using the HiDPI factor of the windowed context.
   pub fn size(&self) -> [u32; 2] {
-    let size = self.ctx.window().inner_size();
+    let size = self.window_ctx.window().inner_size();
     [size.width, size.height]
-  }
-
-  /// Get access to the back buffer.
-  pub fn back_buffer(&mut self) -> Result<Framebuffer<GL33, Dim2, (), ()>, FramebufferError> {
-    Framebuffer::back_buffer(self, self.size())
   }
 
   /// Swap the back and front buffers.
   pub fn swap_buffers(&mut self) {
-    let _ = self.ctx.swap_buffers();
+    let _ = self.window_ctx.swap_buffers();
   }
 }
