@@ -18,9 +18,9 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 gl = "0.14"
-glutin = { version = "0.28", default-features = false }
-luminance = { version = ">=0.46, <0.48", path = "../luminance" }
-luminance-gl = { version = "0.19", path = "../luminance-gl" }
+glutin = { version = "*", default-features = false }
+luminance = { path = "../luminance" }
+luminance-gl2 = { path = "../luminance-gl2" }
 
 [features]
 default = ["x11", "wayland"]
